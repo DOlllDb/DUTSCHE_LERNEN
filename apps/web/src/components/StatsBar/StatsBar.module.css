@@ -1,0 +1,22 @@
+.stats {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+.stat {
+  text-align: right;
+}
+.num {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+.lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-top: 3px;
+}

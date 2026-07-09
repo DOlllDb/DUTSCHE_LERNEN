@@ -1,0 +1,36 @@
+import { z } from 'zod';
+
+export const registerRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(200),
+});
+export type RegisterRequest = z.infer<typeof registerRequestSchema>;
+
+export const loginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1).max(200),
+});
+export type LoginRequest = z.infer<typeof loginRequestSchema>;
+
+export const refreshRequestSchema = z.object({
+  refreshToken: z.string().optional(),
+});
+export type RefreshRequest = z.infer<typeof refreshRequestSchema>;
+
+export interface UserDto {
+  id: number;
+  email: string;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  user: UserDto;
+  accessToken: string;
+  /** Only present for native clients (web relies on the httpOnly cookie instead). */
+  refreshToken?: string;
+}
+
+export interface RefreshResponse {
+  accessToken: string;
+  refreshToken?: string;
+}

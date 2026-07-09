@@ -1,0 +1,67 @@
+/* Shared button family, reused across Flashcard, WordList, and Quiz components. */
+
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    transform 0.1s ease;
+}
+.btn:hover {
+  background: var(--paper-2);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn.primary {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.btn.primary:hover {
+  background: #38312b;
+}
+.btn.gold {
+  background: var(--gold);
+  color: #fff;
+  border-color: var(--gold);
+}
+.btn.gold:hover {
+  background: #a3781f;
+}
+.btn.ghost {
+  background: transparent;
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn.know {
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.know:hover {
+  background: #eaf3ee;
+}
+.btn.learning {
+  border-color: var(--red-soft);
+  color: var(--red);
+}
+.btn.learning:hover {
+  background: #faf0ec;
+}
+.btn.active-hide {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+.btn.active-hide:hover {
+  background: #8f2c19;
+}

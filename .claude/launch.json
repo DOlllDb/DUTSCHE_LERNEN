@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "G:\\Claude\\infra\\dev-api.cmd"],
+      "port": 3000
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "G:\\Claude\\infra\\dev-web.cmd"],
+      "port": 5173
+    }
+  ]
+}

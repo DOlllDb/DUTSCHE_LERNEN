@@ -1,0 +1,114 @@
+.quizIntro {
+  text-align: center;
+  max-width: 440px;
+  margin: auto;
+}
+.quizIntro h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  margin: 0 0 8px;
+}
+.quizIntro p {
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.quizQCount {
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-bottom: 10px;
+}
+.quizPrompt {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.quizPrompt .lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--red);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.quizPrompt .word {
+  font-family: 'Fraunces', serif;
+  font-size: 30px;
+  font-weight: 600;
+}
+.quizOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+@media (max-width: 520px) {
+  .quizOptions {
+    grid-template-columns: 1fr;
+  }
+}
+.optBtn {
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.optBtn:hover {
+  background: var(--paper-2);
+}
+.optBtn.correct {
+  background: #e4f2e9;
+  border-color: var(--green);
+  color: var(--green);
+  font-weight: 700;
+}
+.optBtn.wrong {
+  background: #fbe9e4;
+  border-color: var(--red-soft);
+  color: var(--red);
+  font-weight: 700;
+}
+.optBtn:disabled {
+  cursor: default;
+}
+.quizResult {
+  text-align: center;
+  max-width: 440px;
+  margin: auto;
+}
+.quizScore {
+  font-family: 'Fraunces', serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.quizResult p {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+.reviewList {
+  text-align: left;
+  margin-top: 16px;
+  max-height: 220px;
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.reviewItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.reviewItem.miss .reviewDe {
+  color: var(--red);
+}

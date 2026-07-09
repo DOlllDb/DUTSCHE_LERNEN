@@ -1,0 +1,16 @@
+[Unit]
+Description=Deutsch Lernen API (Fastify)
+After=network.target
+
+[Service]
+Type=simple
+User=vocab-app
+Group=vocab-app
+WorkingDirectory=/opt/vocab-app/current/apps/api
+EnvironmentFile=/etc/vocab-app/api.env
+ExecStart=/usr/bin/node dist/index.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

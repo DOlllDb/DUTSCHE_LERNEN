@@ -1,0 +1,64 @@
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  min-height: 460px;
+  display: flex;
+  flex-direction: column;
+}
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dayTag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--red);
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.dayTopic {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+.wordCountPill {
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--paper-2);
+  padding: 5px 11px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+.testDayHint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: -6px 0 14px;
+}
+.modeToggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.modeBtn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.modeBtn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}

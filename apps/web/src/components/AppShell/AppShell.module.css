@@ -1,0 +1,73 @@
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 18px 60px;
+}
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+.brandEyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.title {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 34px;
+  margin: 0;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.title em {
+  font-style: italic;
+  color: var(--red);
+}
+.progressOuter {
+  height: 6px;
+  max-width: 360px;
+  width: 100%;
+  background: var(--paper-2);
+  border-radius: 99px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.progressInner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--red-soft));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+.footer {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 12px;
+  margin-top: 26px;
+}

@@ -1,0 +1,32 @@
+.toggle {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 7px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink-soft);
+}
+.toggle:hover {
+  background: var(--paper-2);
+}
+.opt {
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.opt.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+.sep {
+  color: var(--line);
+}

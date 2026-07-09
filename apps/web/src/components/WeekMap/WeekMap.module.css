@@ -1,0 +1,116 @@
+.weekmap {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+.weekBlock {
+  margin-bottom: 14px;
+}
+.weekBlock:last-child {
+  margin-bottom: 0;
+}
+.weekTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+.dayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.dayBtn {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease;
+}
+.dayBtn:hover {
+  transform: translateY(-1px);
+}
+.dayBtn.test {
+  background: var(--paper-2);
+  border-color: var(--gold-soft);
+  color: var(--gold);
+}
+.dayBtn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.dayBtn.done::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+.dayBtn.done {
+  color: var(--green);
+}
+.dayBtn.active.done {
+  color: var(--gold-soft);
+}
+.dayBtn.active.done::after {
+  background: var(--gold-soft);
+}
+.legend {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.green {
+  background: var(--green);
+}
+.dot.gold {
+  background: var(--gold);
+}
+.footerControls {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.saveIndicator {
+  font-size: 11px;
+  color: var(--ink-soft);
+}

@@ -1,0 +1,53 @@
+.hideToggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.selftestHint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+.maskedWord {
+  background: var(--ink);
+  color: transparent !important;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: inset 0 0 0 1px var(--ink);
+  transition:
+    background 0.12s ease,
+    opacity 0.12s ease;
+}
+.maskedWord:hover {
+  background: #4a4038;
+}
+.wordlist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+@media (max-width: 520px) {
+  .wordlist {
+    grid-template-columns: 1fr;
+  }
+}
+.wlItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 13px;
+}
+.wlDe {
+  font-weight: 600;
+}
+.wlEn {
+  color: var(--ink-soft);
+}

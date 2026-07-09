@@ -1,0 +1,116 @@
+.cardStage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.flashcard {
+  width: 100%;
+  max-width: 420px;
+  height: 230px;
+  perspective: 1200px;
+  cursor: pointer;
+}
+.flashcardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.flashcard.flipped .flashcardInner {
+  transform: rotateY(180deg);
+}
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  border: 1px solid var(--line);
+}
+.face.front {
+  background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%);
+}
+.face.back {
+  background: linear-gradient(160deg, #2a2420 0%, #1c1815 100%);
+  color: var(--paper);
+  transform: rotateY(180deg);
+  border-color: #3a322c;
+}
+.catChip {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.face.back .catChip {
+  color: var(--gold-soft);
+}
+.wordDe {
+  font-family: 'Fraunces', serif;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+.wordEn {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 500;
+  font-style: italic;
+}
+.flipHint {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 10px;
+}
+.face.back .flipHint {
+  color: #b7ada0;
+}
+.cardControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.wordDots {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 420px;
+  margin-top: 6px;
+}
+.wdot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+.wdot.current {
+  background: var(--ink);
+  transform: scale(1.3);
+}
+.wdot.known {
+  background: var(--green);
+}
+.wdot.learningFlag {
+  background: var(--red-soft);
+}
+.dayCompleteBtn {
+  margin-top: 16px;
+}
