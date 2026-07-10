@@ -18,7 +18,7 @@ const REFRESH_COOKIE = 'refreshToken';
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: config.COOKIE_SECURE,
   sameSite: 'lax' as const,
   path: '/api/auth',
   maxAge: 60 * 60 * 24 * 30,

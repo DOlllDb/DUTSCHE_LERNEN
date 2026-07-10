@@ -120,9 +120,11 @@ sudo certbot --nginx -d your-domain.example
 
 Certbot edits the nginx config to add the HTTPS server block and redirect — update
 `server_name` in `infra/nginx/vocab-app.conf` to your domain first (or just let
-certbot's interactive prompt do it), and update `CORS_ORIGIN` in
-`/etc/vocab-app/api.env` to `https://your-domain.example`, then
-`sudo systemctl restart vocab-api`.
+certbot's interactive prompt do it), and in `/etc/vocab-app/api.env` update
+`CORS_ORIGIN` to `https://your-domain.example` **and set `COOKIE_SECURE=true`**
+(the refresh cookie needs the Secure flag once traffic is actually HTTPS — leaving
+it `false` over HTTP is required, but leaving it `false` after adding TLS would be
+a needless weakening), then `sudo systemctl restart vocab-api`.
 
 ## Not built yet (intentionally, for v1)
 
