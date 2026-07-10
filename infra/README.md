@@ -63,7 +63,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your.address@gmail.com
 SMTP_PASS=your16charapppassword
-SMTP_FROM=Deutsch Lernen <your.address@gmail.com>
+SMTP_FROM="Deutsch Lernen <your.address@gmail.com>"
 EOF
 sudo chown vocab-app:vocab-app /etc/vocab-app/api.env
 sudo chmod 640 /etc/vocab-app/api.env
