@@ -7,6 +7,8 @@ import {
   buildQuiz,
   computeStats,
   shuffle,
+  getLearnedWords,
+  buildPracticeQuiz,
 } from '../src/curriculum/logic.js';
 import { emptyProgress } from '../src/progress/types.js';
 
@@ -86,5 +88,43 @@ describe('computeStats', () => {
     expect(stats.doneDaysCount).toBe(2);
     expect(stats.wordsLearned).toBe(40);
     expect(stats.testsPassed).toBe(1);
+  });
+});
+
+describe('getLearnedWords', () => {
+  it('returns nothing for empty progress', () => {
+    expect(getLearnedWords(CURRICULUM, emptyProgress())).toEqual([]);
+  });
+
+  it('returns only words from days marked done', () => {
+    const progress = emptyProgress();
+    progress.doneDays[1] = true;
+    progress.doneDays[3] = true;
+    const words = getLearnedWords(CURRICULUM, progress);
+    expect(words).toHaveLength(40);
+    expect(words).toEqual([...getDay(CURRICULUM, 1)!.words, ...getDay(CURRICULUM, 3)!.words]);
+  });
+});
+
+describe('buildPracticeQuiz', () => {
+  it('respects an explicit direction for every question', () => {
+    const pool = getDay(CURRICULUM, 1)!.words;
+    const deToEn = buildPracticeQuiz(pool, 'de-en');
+    expect(deToEn.length).toBeGreaterThan(0);
+    for (const q of deToEn) expect(q.direction).toBe('de-en');
+
+    const enToDe = buildPracticeQuiz(pool, 'en-de');
+    for (const q of enToDe) expect(q.direction).toBe('en-de');
+  });
+
+  it('mixes directions when asked', () => {
+    const pool = [...getDay(CURRICULUM, 1)!.words, ...getDay(CURRICULUM, 2)!.words];
+    const questions = buildPracticeQuiz(pool, 'mixed');
+    expect(questions.length).toBeGreaterThan(0);
+    for (const q of questions) expect(['de-en', 'en-de']).toContain(q.direction);
+  });
+
+  it('returns an empty quiz for an empty pool without throwing', () => {
+    expect(buildPracticeQuiz([], 'mixed')).toEqual([]);
   });
 });

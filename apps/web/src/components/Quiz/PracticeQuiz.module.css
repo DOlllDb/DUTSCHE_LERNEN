@@ -1,0 +1,22 @@
+.directionPicker {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.directionBtn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.directionBtn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}

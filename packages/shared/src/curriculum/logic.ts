@@ -43,6 +43,31 @@ export interface QuizQuestion {
   direction: 'de-en' | 'en-de';
 }
 
+/** 'mixed' picks a random direction per question, like the weekly test does. */
+export type QuizDirection = 'de-en' | 'en-de' | 'mixed';
+
+const DEFAULT_QUESTION_COUNT = 20;
+
+function buildQuestionsFromPool(
+  pool: Word[],
+  direction: QuizDirection,
+  maxCount: number = DEFAULT_QUESTION_COUNT
+): QuizQuestion[] {
+  const qCount = Math.min(maxCount, pool.length);
+  const chosen = shuffle(pool).slice(0, qCount);
+
+  return chosen.map((w) => {
+    const deToEn = direction === 'mixed' ? Math.random() < 0.5 : direction === 'de-en';
+    const correct = deToEn ? w.en : w.de;
+    const prompt = deToEn ? w.de : w.en;
+    const distractors = shuffle(pool.filter((p) => p !== w))
+      .slice(0, 3)
+      .map((p) => (deToEn ? p.en : p.de));
+    const options = shuffle([correct, ...distractors]);
+    return { prompt, correct, options, direction: deToEn ? 'de-en' : 'en-de' } as QuizQuestion;
+  });
+}
+
 /** Builds the weekly-quiz question set for a test day: up to 20 multiple-choice
  * questions drawn from every word since the previous test day, mixing
  * German->English and English->German prompts with 3 shuffled distractors each. */
@@ -55,19 +80,24 @@ export function buildQuiz(curriculum: Curriculum, testDay: number): QuizQuestion
     if (d.day > prevTest && d.day <= testDay) pool = pool.concat(d.words);
   });
 
-  const qCount = Math.min(20, pool.length);
-  const chosen = shuffle(pool).slice(0, qCount);
+  return buildQuestionsFromPool(pool, 'mixed');
+}
 
-  return chosen.map((w) => {
-    const deToEn = Math.random() < 0.5;
-    const correct = deToEn ? w.en : w.de;
-    const prompt = deToEn ? w.de : w.en;
-    const distractors = shuffle(pool.filter((p) => p !== w))
-      .slice(0, 3)
-      .map((p) => (deToEn ? p.en : p.de));
-    const options = shuffle([correct, ...distractors]);
-    return { prompt, correct, options, direction: deToEn ? 'de-en' : 'en-de' } as QuizQuestion;
+/** All words from days the user has marked done -- the same definition of
+ * "learned" that the stats bar's word count already uses. */
+export function getLearnedWords(curriculum: Curriculum, progress: Progress): Word[] {
+  let pool: Word[] = [];
+  curriculum.days.forEach((d) => {
+    if (progress.doneDays[d.day]) pool = pool.concat(d.words);
   });
+  return pool;
+}
+
+/** Builds an on-demand practice-test question set from an arbitrary word pool
+ * (typically all learned words), in a user-chosen direction rather than the
+ * weekly test's always-mixed direction. */
+export function buildPracticeQuiz(pool: Word[], direction: QuizDirection): QuizQuestion[] {
+  return buildQuestionsFromPool(pool, direction);
 }
 
 export interface Stats {

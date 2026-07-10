@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { computeStats, totalWords } from '@deutsch-lernen/shared';
+import { computeStats, totalWords, getLearnedWords } from '@deutsch-lernen/shared';
 import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
 import { useAuth } from '../../state/AuthContext.js';
@@ -7,6 +7,7 @@ import { LangToggle } from '../LangToggle/LangToggle.js';
 import { StatsBar } from '../StatsBar/StatsBar.js';
 import { WeekMap } from '../WeekMap/WeekMap.js';
 import { DayView } from '../DayView/DayView.js';
+import { PracticeQuiz } from '../Quiz/PracticeQuiz.js';
 import styles from './AppShell.module.css';
 
 export function AppShell() {
@@ -14,6 +15,7 @@ export function AppShell() {
   const { t } = useLang();
   const { user, logout } = useAuth();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [practiceMode, setPracticeMode] = useState(false);
 
   useEffect(() => {
     if (selectedDay !== null || !curriculum) return;
@@ -48,6 +50,9 @@ export function AppShell() {
         <div className={styles.headerRight}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <LangToggle />
+            <button className="btn ghost" onClick={() => setPracticeMode(true)}>
+              {t('practiceTestButton')}
+            </button>
             {user && (
               <span style={{ fontSize: 12, color: 'var(--ink-soft)' }}>{user.email}</span>
             )}
@@ -60,8 +65,18 @@ export function AppShell() {
       </div>
 
       <div className={styles.layout}>
-        <WeekMap selectedDay={selectedDay} onSelectDay={setSelectedDay} />
-        <DayView dayNum={selectedDay} />
+        <WeekMap
+          selectedDay={selectedDay}
+          onSelectDay={(d) => {
+            setSelectedDay(d);
+            setPracticeMode(false);
+          }}
+        />
+        {practiceMode ? (
+          <PracticeQuiz pool={getLearnedWords(curriculum, progress)} onExit={() => setPracticeMode(false)} />
+        ) : (
+          <DayView dayNum={selectedDay} />
+        )}
       </div>
 
       <footer className={styles.footer}>{t('footer')}</footer>
