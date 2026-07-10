@@ -12,7 +12,7 @@ import styles from './AppShell.module.css';
 export function AppShell() {
   const { curriculum, progress, loading } = useProgress();
   const { t } = useLang();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   useEffect(() => {
@@ -48,6 +48,9 @@ export function AppShell() {
         <div className={styles.headerRight}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <LangToggle />
+            {user && (
+              <span style={{ fontSize: 12, color: 'var(--ink-soft)' }}>{user.email}</span>
+            )}
             <button className="btn ghost" onClick={logout}>
               Logout
             </button>
