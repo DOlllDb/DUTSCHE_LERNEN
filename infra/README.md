@@ -10,6 +10,10 @@ later (see the note at the bottom) without any application code changes.
 - Ubuntu (any version with systemd), t2/t3.micro or larger.
 - Security group: allow port 22 (SSH, ideally restricted to your IP) and port 80
   (HTTP, open) inbound.
+- A Gmail App Password for sending account-verification emails: Google Account ->
+  Security -> 2-Step Verification (must be turned on first) -> App Passwords ->
+  create one for "Mail". Copy the 16-character password (no spaces) -- that's
+  `SMTP_PASS` below, not your regular Gmail password.
 
 ## First deploy
 
@@ -54,6 +58,12 @@ COOKIE_SECRET=$COOKIE_SECRET_VAL
 ACCESS_TOKEN_TTL=15m
 REFRESH_TOKEN_TTL_DAYS=30
 CORS_ORIGIN=http://YOUR_VM_PUBLIC_IP
+APP_ORIGIN=http://YOUR_VM_PUBLIC_IP
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your.address@gmail.com
+SMTP_PASS=your16charapppassword
+SMTP_FROM=Deutsch Lernen <your.address@gmail.com>
 EOF
 sudo chown vocab-app:vocab-app /etc/vocab-app/api.env
 sudo chmod 640 /etc/vocab-app/api.env

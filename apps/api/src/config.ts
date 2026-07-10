@@ -20,6 +20,16 @@ const envSchema = z.object({
     .string()
     .default('false')
     .transform((v) => v === 'true'),
+  // The public URL the app is served at -- used to build the link inside the
+  // verification email. Defaults to the local web dev server.
+  APP_ORIGIN: z.string().default('http://localhost:5173'),
+  // SMTP is optional: if unset, verification emails are logged to the server
+  // console instead of sent, so local dev/tests never need real credentials.
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().default('Deutsch Lernen <no-reply@deutsch-lernen.local>'),
 });
 
 export const config = envSchema.parse(process.env);

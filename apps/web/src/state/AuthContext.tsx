@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
+import type { AuthResponse } from '@deutsch-lernen/shared';
 import * as authApi from '../api/auth.api.js';
 import { setAccessToken, setSessionExpiredHandler } from '../api/client.js';
 
@@ -11,7 +12,11 @@ interface AuthContextValue {
   user: User | null;
   status: 'loading' | 'authenticated' | 'anonymous';
   login: (email: string, password: string) => Promise<void>;
+  /** Registration no longer logs the user in -- they must confirm their email first. */
   register: (email: string, password: string) => Promise<void>;
+  /** Used by the verify-email page: it already has an AuthResponse from the
+   * verify call, it just needs to apply it to session state. */
+  applySession: (res: AuthResponse) => void;
   logout: () => Promise<void>;
 }
 
@@ -27,6 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus('anonymous');
   }, []);
 
+  const applySession = useCallback((res: AuthResponse) => {
+    setAccessToken(res.accessToken);
+    setUser(res.user);
+    setStatus('authenticated');
+  }, []);
+
   // Refresh-token rotation is one-shot: presenting the same token twice makes the
   // second call fail. React 18 StrictMode intentionally double-invokes effects in
   // dev, which would otherwise fire this exact call twice and let whichever one
@@ -39,28 +50,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (didAttemptRefresh.current) return;
     didAttemptRefresh.current = true;
 
-    authApi
-      .refresh()
-      .then((res) => {
-        setAccessToken(res.accessToken);
-        setUser(res.user);
-        setStatus('authenticated');
-      })
-      .catch(() => setStatus('anonymous'));
-  }, [clearSession]);
+    authApi.refresh().then(applySession).catch(() => setStatus('anonymous'));
+  }, [clearSession, applySession]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await authApi.login({ email, password });
-    setAccessToken(res.accessToken);
-    setUser(res.user);
-    setStatus('authenticated');
-  }, []);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const res = await authApi.login({ email, password });
+      applySession(res);
+    },
+    [applySession]
+  );
 
   const register = useCallback(async (email: string, password: string) => {
-    const res = await authApi.register({ email, password });
-    setAccessToken(res.accessToken);
-    setUser(res.user);
-    setStatus('authenticated');
+    await authApi.register({ email, password });
   }, []);
 
   const logout = useCallback(async () => {
@@ -69,7 +71,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearSession]);
 
   return (
-    <AuthContext.Provider value={{ user, status, login, register, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, status, login, register, applySession, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 

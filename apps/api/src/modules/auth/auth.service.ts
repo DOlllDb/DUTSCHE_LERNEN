@@ -29,8 +29,21 @@ export function verifyAccessToken(token: string): AccessTokenPayload {
   return jwt.verify(token, config.JWT_ACCESS_SECRET) as unknown as AccessTokenPayload;
 }
 
-function hashToken(token: string): string {
+export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
+}
+
+const VERIFICATION_TOKEN_TTL_HOURS = 24;
+
+/** Generates a fresh email-verification token: the raw value to email to the
+ * user, and the hash + expiry to store on their row (never the raw value). */
+export function generateVerificationToken(): { raw: string; hash: string; expiresAt: Date } {
+  const raw = randomBytes(32).toString('hex');
+  return {
+    raw,
+    hash: hashToken(raw),
+    expiresAt: new Date(Date.now() + VERIFICATION_TOKEN_TTL_HOURS * 60 * 60 * 1000),
+  };
 }
 
 /** Issues a brand-new opaque refresh token, stores only its hash, returns the raw token. */

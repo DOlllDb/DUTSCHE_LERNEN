@@ -5,6 +5,7 @@ import { LangProvider } from './state/LangContext.js';
 import { ProgressProvider } from './state/ProgressContext.js';
 import { LoginPage } from './routes/LoginPage.js';
 import { RegisterPage } from './routes/RegisterPage.js';
+import { VerifyEmailPage } from './routes/VerifyEmailPage.js';
 import { AppShell } from './components/AppShell/AppShell.js';
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -30,6 +31,7 @@ export function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route
               path="/"
               element={

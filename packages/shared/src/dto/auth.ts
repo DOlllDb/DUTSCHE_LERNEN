@@ -17,10 +17,26 @@ export const refreshRequestSchema = z.object({
 });
 export type RefreshRequest = z.infer<typeof refreshRequestSchema>;
 
+export const verifyEmailRequestSchema = z.object({
+  token: z.string().min(1),
+});
+export type VerifyEmailRequest = z.infer<typeof verifyEmailRequestSchema>;
+
+export const resendVerificationRequestSchema = z.object({
+  email: z.string().email(),
+});
+export type ResendVerificationRequest = z.infer<typeof resendVerificationRequestSchema>;
+
 export interface UserDto {
   id: number;
   email: string;
   createdAt: string;
+}
+
+/** Registration doesn't log the user in -- they still need to confirm their
+ * email before their first login, so no tokens are issued yet. */
+export interface RegisterResponse {
+  user: UserDto;
 }
 
 export interface AuthResponse {

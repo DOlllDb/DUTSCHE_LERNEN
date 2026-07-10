@@ -1,8 +1,8 @@
-import type { AuthResponse, RegisterRequest, LoginRequest } from '@deutsch-lernen/shared';
+import type { AuthResponse, RegisterRequest, RegisterResponse, LoginRequest } from '@deutsch-lernen/shared';
 import { apiRequest } from './client.js';
 
-export function register(body: RegisterRequest): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/api/auth/register', {
+export function register(body: RegisterRequest): Promise<RegisterResponse> {
+  return apiRequest<RegisterResponse>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(body),
   });
@@ -12,6 +12,20 @@ export function login(body: LoginRequest): Promise<AuthResponse> {
   return apiRequest<AuthResponse>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify(body),
+  });
+}
+
+export function verifyEmail(token: string): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/api/auth/verify-email', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+export function resendVerification(email: string): Promise<void> {
+  return apiRequest<void>('/api/auth/resend-verification', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
   });
 }
 

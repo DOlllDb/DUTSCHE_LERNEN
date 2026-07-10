@@ -1,16 +1,16 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../state/AuthContext.js';
 import { ApiRequestError } from '../api/client.js';
 import styles from './AuthForm.module.css';
 
 export function RegisterPage() {
   const { register } = useAuth();
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -18,12 +18,30 @@ export function RegisterPage() {
     setSubmitting(true);
     try {
       await register(email, password);
-      navigate('/');
+      setSubmittedEmail(email);
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : 'Registration failed.');
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (submittedEmail) {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.card}>
+          <div className={styles.eyebrow}>Deutsch lernen</div>
+          <h1 className={styles.title}>Check your email</h1>
+          <p>
+            We've sent a confirmation link to <strong>{submittedEmail}</strong>. Click it to activate your
+            account, then log in.
+          </p>
+          <div className={styles.switchLine}>
+            <Link to="/login">Go to login</Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

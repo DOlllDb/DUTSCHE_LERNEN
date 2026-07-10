@@ -1,6 +1,12 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { eq } from 'drizzle-orm';
-import { registerRequestSchema, loginRequestSchema, refreshRequestSchema } from '@deutsch-lernen/shared';
+import {
+  registerRequestSchema,
+  loginRequestSchema,
+  refreshRequestSchema,
+  verifyEmailRequestSchema,
+  resendVerificationRequestSchema,
+} from '@deutsch-lernen/shared';
 import { db } from '../../db/client.js';
 import { users } from '../../db/schema.js';
 import { config } from '../../config.js';
@@ -12,7 +18,10 @@ import {
   issueRefreshToken,
   rotateRefreshToken,
   revokeRefreshToken,
+  generateVerificationToken,
+  hashToken,
 } from './auth.service.js';
+import { sendVerificationEmail } from './email.service.js';
 
 const REFRESH_COOKIE = 'refreshToken';
 
@@ -32,19 +41,22 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (existing) throw new ApiError(409, 'EMAIL_TAKEN', 'An account with this email already exists.');
 
     const passwordHash = await hashPassword(body.password);
+    const verification = generateVerificationToken();
     const [user] = await db
       .insert(users)
-      .values({ email: body.email, passwordHash, authProvider: 'password' })
+      .values({
+        email: body.email,
+        passwordHash,
+        authProvider: 'password',
+        verificationTokenHash: verification.hash,
+        verificationTokenExpiresAt: verification.expiresAt,
+      })
       .returning();
 
-    const accessToken = signAccessToken({ sub: user.id, email: user.email });
-    const refreshToken = await issueRefreshToken(user.id);
+    await sendVerificationEmail(user.email, verification.raw);
 
-    reply.setCookie(REFRESH_COOKIE, refreshToken, cookieOptions);
     reply.status(201).send({
       user: { id: user.id, email: user.email, createdAt: user.createdAt.toISOString() },
-      accessToken,
-      refreshToken,
     });
   });
 
@@ -57,6 +69,10 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     const valid = await verifyPassword(body.password, user.passwordHash);
     if (!valid) throw new ApiError(401, 'INVALID_CREDENTIALS', 'Invalid email or password.');
 
+    if (!user.emailVerifiedAt) {
+      throw new ApiError(403, 'EMAIL_NOT_VERIFIED', 'Please confirm your email address before logging in.');
+    }
+
     const accessToken = signAccessToken({ sub: user.id, email: user.email });
     const refreshToken = await issueRefreshToken(user.id);
 
@@ -66,6 +82,50 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       accessToken,
       refreshToken,
     });
+  });
+
+  app.post('/verify-email', async (req, reply) => {
+    const body = verifyEmailRequestSchema.parse(req.body);
+    const hash = hashToken(body.token);
+
+    const user = await db.query.users.findFirst({ where: eq(users.verificationTokenHash, hash) });
+    if (!user || !user.verificationTokenExpiresAt || user.verificationTokenExpiresAt.getTime() < Date.now()) {
+      throw new ApiError(400, 'INVALID_VERIFICATION_TOKEN', 'This verification link is invalid or has expired.');
+    }
+
+    await db
+      .update(users)
+      .set({ emailVerifiedAt: new Date(), verificationTokenHash: null, verificationTokenExpiresAt: null })
+      .where(eq(users.id, user.id));
+
+    // Verifying logs the user straight in, same shape as /login.
+    const accessToken = signAccessToken({ sub: user.id, email: user.email });
+    const refreshToken = await issueRefreshToken(user.id);
+
+    reply.setCookie(REFRESH_COOKIE, refreshToken, cookieOptions);
+    reply.send({
+      user: { id: user.id, email: user.email, createdAt: user.createdAt.toISOString() },
+      accessToken,
+      refreshToken,
+    });
+  });
+
+  app.post('/resend-verification', async (req, reply) => {
+    const body = resendVerificationRequestSchema.parse(req.body);
+    const user = await db.query.users.findFirst({ where: eq(users.email, body.email) });
+
+    // Always respond the same way regardless of whether the account exists or
+    // is already verified, so this can't be used to enumerate registered emails.
+    if (user && !user.emailVerifiedAt) {
+      const verification = generateVerificationToken();
+      await db
+        .update(users)
+        .set({ verificationTokenHash: verification.hash, verificationTokenExpiresAt: verification.expiresAt })
+        .where(eq(users.id, user.id));
+      await sendVerificationEmail(user.email, verification.raw);
+    }
+
+    reply.send({ ok: true });
   });
 
   app.post('/refresh', async (req, reply) => {

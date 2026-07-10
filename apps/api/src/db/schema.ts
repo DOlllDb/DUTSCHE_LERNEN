@@ -7,6 +7,12 @@ export const users = sqliteTable('users', {
   // Nullable so a future Apple-only account can exist without a password.
   passwordHash: text('password_hash'),
   authProvider: text('auth_provider').notNull().default('password'),
+  // Null until the user clicks the emailed confirmation link. A user can only
+  // have one outstanding verification token at a time, so it's stored
+  // directly on the row rather than in a separate table like refresh tokens.
+  emailVerifiedAt: integer('email_verified_at', { mode: 'timestamp' }),
+  verificationTokenHash: text('verification_token_hash'),
+  verificationTokenExpiresAt: integer('verification_token_expires_at', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
