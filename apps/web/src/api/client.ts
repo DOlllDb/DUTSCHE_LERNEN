@@ -1,4 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+// Empty string means "same origin, relative path" -- correct for production,
+// where nginx proxies /api/* on the same origin as the static site. Local dev
+// sets VITE_API_BASE_URL explicitly (apps/web/.env) since the Vite dev server
+// and the API run on different ports there.
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 
 let accessToken: string | null = null;
 let onSessionExpired: (() => void) | null = null;
