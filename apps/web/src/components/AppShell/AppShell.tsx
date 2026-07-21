@@ -75,7 +75,7 @@ export function AppShell() {
         {practiceMode ? (
           <PracticeQuiz pool={getLearnedWords(curriculum, progress)} onExit={() => setPracticeMode(false)} />
         ) : (
-          <DayView dayNum={selectedDay} />
+          <DayView key={selectedDay} dayNum={selectedDay} />
         )}
       </div>
 

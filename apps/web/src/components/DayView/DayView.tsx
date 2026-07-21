@@ -14,6 +14,10 @@ type ViewMode = 'cards' | 'list' | 'quiz';
 
 export function DayView({ dayNum }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
+  // Lives here (not inside Flashcard) so it survives switching to list/quiz
+  // mode and back. Resets naturally because AppShell keys this whole
+  // component by day, so a day change remounts it -- a mode toggle doesn't.
+  const [cardIndex, setCardIndex] = useState(0);
   const { curriculum, progress, toggleDayDone } = useProgress();
   const { t, dayTitle } = useLang();
 
@@ -25,7 +29,7 @@ export function DayView({ dayNum }: Props) {
   const doneAlready = !!progress.doneDays[dayNum];
 
   return (
-    <div className={styles.panel} key={dayNum}>
+    <div className={styles.panel}>
       <div className={styles.panelHead}>
         <div>
           <div className={styles.dayTag}>
@@ -67,13 +71,19 @@ export function DayView({ dayNum }: Props) {
       )}
 
       {viewMode === 'cards' && (
-        <Flashcard key={day.day} day={day} doneAlready={doneAlready} onToggleDone={() => toggleDayDone(day.day)} />
+        <Flashcard
+          day={day}
+          doneAlready={doneAlready}
+          onToggleDone={() => toggleDayDone(day.day)}
+          cardIndex={cardIndex}
+          onCardIndexChange={setCardIndex}
+        />
       )}
       {viewMode === 'list' && (
-        <WordList key={day.day} day={day} doneAlready={doneAlready} onToggleDone={() => toggleDayDone(day.day)} />
+        <WordList day={day} doneAlready={doneAlready} onToggleDone={() => toggleDayDone(day.day)} />
       )}
       {viewMode === 'quiz' && isTestDay && (
-        <Quiz key={day.day} day={day} curriculum={curriculum} onBackToCards={() => setViewMode('cards')} />
+        <Quiz day={day} curriculum={curriculum} onBackToCards={() => setViewMode('cards')} />
       )}
     </div>
   );

@@ -9,10 +9,13 @@ interface Props {
   day: Day;
   doneAlready: boolean;
   onToggleDone: () => void;
+  /** Lifted to DayView so it survives switching to another mode (list/quiz)
+   * and back -- only a day change should reset this, not a mode toggle. */
+  cardIndex: number;
+  onCardIndexChange: (index: number) => void;
 }
 
-export function Flashcard({ day, doneAlready, onToggleDone }: Props) {
-  const [cardIndex, setCardIndex] = useState(0);
+export function Flashcard({ day, doneAlready, onToggleDone, cardIndex, onCardIndexChange }: Props) {
   const [flipped, setFlipped] = useState(false);
   const { progress, setWordStatus } = useProgress();
   const { t, catLabel } = useLang();
@@ -22,7 +25,7 @@ export function Flashcard({ day, doneAlready, onToggleDone }: Props) {
 
   function advance() {
     if (cardIndex < words.length - 1) {
-      setCardIndex((i) => i + 1);
+      onCardIndexChange(cardIndex + 1);
       setFlipped(false);
     }
   }
@@ -54,7 +57,7 @@ export function Flashcard({ day, doneAlready, onToggleDone }: Props) {
           onClick={(e) => {
             e.stopPropagation();
             if (cardIndex > 0) {
-              setCardIndex((i) => i - 1);
+              onCardIndexChange(cardIndex - 1);
               setFlipped(false);
             }
           }}
@@ -109,7 +112,7 @@ export function Flashcard({ day, doneAlready, onToggleDone }: Props) {
               key={i}
               className={cls}
               onClick={() => {
-                setCardIndex(i);
+                onCardIndexChange(i);
                 setFlipped(false);
               }}
             />
