@@ -65,10 +65,10 @@
   color: var(--green);
 }
 .dayBtn.active.done {
-  color: var(--gold-soft);
+  color: var(--gold-on-ink);
 }
 .dayBtn.active.done::after {
-  background: var(--gold-soft);
+  background: var(--gold-on-ink);
 }
 .legend {
   display: flex;

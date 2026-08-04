@@ -20,6 +20,10 @@
   --gold: #b8862e;
   --gold-soft: #e7c77b;
   --gold-hover: #a3781f;
+  /* Gold that sits ON an --ink surface (the selected day button, the selected
+     topic's tick). --ink inverts between themes, so this has to invert with it:
+     light gold on dark ink here, deep amber on light ink in the dark theme. */
+  --gold-on-ink: #e7c77b;
   --green: #3e6b4f;
   /* Pale status tints for list rows -- deliberately softer than the quiz's
      answer highlights, since a whole column of saturated rows would fight the
@@ -66,6 +70,7 @@
     --gold: #d9a441;
     --gold-soft: #e7c77b;
     --gold-hover: #e8b855;
+    --gold-on-ink: #7a4a0c;
     --green: #7fb08d;
     --green-tint: #1f2d24;
     --green-line: #38513f;
@@ -102,6 +107,7 @@
   --gold: #d9a441;
   --gold-soft: #e7c77b;
   --gold-hover: #e8b855;
+  --gold-on-ink: #7a4a0c;
   --green: #7fb08d;
   --green-tint: #1f2d24;
   --green-line: #38513f;

@@ -65,5 +65,5 @@
   color: var(--green);
 }
 .topic.active .check {
-  color: var(--gold-soft);
+  color: var(--gold-on-ink);
 }
