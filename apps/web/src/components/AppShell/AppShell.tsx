@@ -4,11 +4,17 @@ import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
 import { useAuth } from '../../state/AuthContext.js';
 import { LangToggle } from '../LangToggle/LangToggle.js';
+import { ThemeToggle } from '../ThemeToggle/ThemeToggle.js';
 import { StatsBar } from '../StatsBar/StatsBar.js';
-import { WeekMap } from '../WeekMap/WeekMap.js';
+import { Sidebar } from '../Sidebar/Sidebar.js';
 import { DayView } from '../DayView/DayView.js';
 import { PracticeQuiz } from '../Quiz/PracticeQuiz.js';
 import styles from './AppShell.module.css';
+
+/** The local part of an email -- "someone@example.com" -> "someone". */
+function usernameOf(email: string): string {
+  return email.split('@')[0];
+}
 
 export function AppShell() {
   const { curriculum, progress, loading } = useProgress();
@@ -48,16 +54,12 @@ export function AppShell() {
           </div>
         </div>
         <div className={styles.headerRight}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div className={styles.headerControls}>
             <LangToggle />
-            <button className="btn ghost" onClick={() => setPracticeMode(true)}>
-              {t('practiceTestButton')}
-            </button>
-            {user && (
-              <span style={{ fontSize: 12, color: 'var(--ink-soft)' }}>{user.email}</span>
-            )}
+            <ThemeToggle />
+            {user && <span className={styles.username}>{usernameOf(user.email)}</span>}
             <button className="btn ghost" onClick={logout}>
-              Logout
+              {t('logoutBtn')}
             </button>
           </div>
           <StatsBar />
@@ -65,12 +67,14 @@ export function AppShell() {
       </div>
 
       <div className={styles.layout}>
-        <WeekMap
+        <Sidebar
           selectedDay={selectedDay}
           onSelectDay={(d) => {
             setSelectedDay(d);
             setPracticeMode(false);
           }}
+          practiceMode={practiceMode}
+          onStartPractice={() => setPracticeMode(true)}
         />
         {practiceMode ? (
           <PracticeQuiz onExit={() => setPracticeMode(false)} />

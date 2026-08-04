@@ -40,10 +40,12 @@
   background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%);
 }
 .face.back {
-  background: linear-gradient(160deg, #2a2420 0%, #1c1815 100%);
-  color: var(--paper);
+  background: linear-gradient(160deg, var(--card-back-from) 0%, var(--card-back-to) 100%);
+  /* Not var(--paper): the reverse side stays dark in both themes, so its text
+     needs its own token rather than the (inverting) page background. */
+  color: var(--card-back-text);
   transform: rotateY(180deg);
-  border-color: #3a322c;
+  border-color: var(--card-back-line);
 }
 .catChip {
   font-size: 10px;
@@ -74,7 +76,7 @@
   margin-top: 10px;
 }
 .face.back .flipHint {
-  color: #b7ada0;
+  color: var(--card-back-hint);
 }
 .cardControls {
   display: flex;

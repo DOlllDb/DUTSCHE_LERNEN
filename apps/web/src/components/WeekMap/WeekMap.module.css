@@ -1,10 +1,4 @@
-.weekmap {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 14px;
-  box-shadow: var(--shadow);
-}
+/* The card wrapper now lives in Sidebar, which hosts both this and TopicList. */
 .weekBlock {
   margin-bottom: 14px;
 }
@@ -102,15 +96,5 @@
 .dot.gold {
   background: var(--gold);
 }
-.footerControls {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.saveIndicator {
-  font-size: 11px;
-  color: var(--ink-soft);
-}
+/* .footerControls / .saveIndicator moved to Sidebar.module.css -- they belong
+   to the sidebar as a whole, not to the Weeks tab. */

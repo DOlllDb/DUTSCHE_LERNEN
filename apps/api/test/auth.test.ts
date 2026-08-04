@@ -181,6 +181,9 @@ describe('auth + progress lifecycle', () => {
     });
     expect(res.statusCode).toBe(200);
     expect(res.json().accessToken).toBeTruthy();
+    // The user comes back too, so a silent refresh on page load restores the
+    // whole session rather than just the token.
+    expect(res.json().user).toMatchObject({ email: credentials.email });
     const oldCookie = refreshCookie;
     refreshCookie = res.cookies.find((c) => c.name === 'refreshToken')!.value;
 

@@ -22,7 +22,7 @@
     opacity 0.12s ease;
 }
 .maskedWord:hover {
-  background: #4a4038;
+  background: var(--mask-hover);
 }
 .wordlist {
   display: grid;

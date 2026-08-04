@@ -1,0 +1,69 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Tall enough to browse, capped so the sidebar doesn't run far past the
+     main panel with 62 topics in it. */
+  max-height: 520px;
+  overflow-y: auto;
+  margin: -2px -4px 0;
+  padding: 2px 4px 0;
+}
+.topic {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--paper);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
+}
+.topic:hover {
+  background: var(--paper-2);
+  transform: translateY(-1px);
+}
+.topic.active {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.topic.active .name,
+.topic.active .meta {
+  color: var(--paper);
+}
+/* Every day of this topic is marked done. */
+.topic.done {
+  border-color: var(--green-line);
+}
+.body {
+  flex: 1;
+  min-width: 0;
+}
+.name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.meta {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.check {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--green);
+}
+.topic.active .check {
+  color: var(--gold-soft);
+}

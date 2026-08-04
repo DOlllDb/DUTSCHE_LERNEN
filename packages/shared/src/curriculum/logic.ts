@@ -224,6 +224,34 @@ export function buildPracticeQuiz(
   return buildQuestionsFromPool(pool, everything, direction);
 }
 
+/** One vocabulary topic (the `cat` field on a word), with everywhere it
+ * appears. Topics don't align to day boundaries, so most span two days. */
+export interface TopicSummary {
+  /** German label, and the identity of the topic. */
+  cat: string;
+  cat_en: string;
+  /** Ascending day numbers this topic has words on. */
+  days: number[];
+  refs: WordRef[];
+}
+
+/** Groups the curriculum by topic, in order of first appearance. */
+export function curriculumTopics(curriculum: Curriculum): TopicSummary[] {
+  const byCat = new Map<string, TopicSummary>();
+
+  for (const ref of allWordRefs(curriculum)) {
+    let topic = byCat.get(ref.word.cat);
+    if (!topic) {
+      topic = { cat: ref.word.cat, cat_en: ref.word.cat_en, days: [], refs: [] };
+      byCat.set(ref.word.cat, topic);
+    }
+    topic.refs.push(ref);
+    if (topic.days[topic.days.length - 1] !== ref.day) topic.days.push(ref.day);
+  }
+
+  return [...byCat.values()];
+}
+
 export interface Stats {
   doneDaysCount: number;
   wordsLearned: number;

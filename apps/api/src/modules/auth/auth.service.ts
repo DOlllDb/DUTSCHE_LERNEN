@@ -63,9 +63,11 @@ export async function issueRefreshToken(userId: number): Promise<string> {
  * one issued. If the presented token was already revoked (replay/theft), every token for
  * that user is revoked and the caller must re-authenticate.
  */
-export async function rotateRefreshToken(
-  raw: string
-): Promise<{ userId: number; accessToken: string; refreshToken: string } | null> {
+export async function rotateRefreshToken(raw: string): Promise<{
+  user: { id: number; email: string; createdAt: Date };
+  accessToken: string;
+  refreshToken: string;
+} | null> {
   const hash = hashToken(raw);
   const row = await db.query.refreshTokens.findFirst({
     where: eq(refreshTokens.tokenHash, hash),
@@ -91,7 +93,14 @@ export async function rotateRefreshToken(
 
   const newRefreshToken = await issueRefreshToken(user.id);
   const accessToken = signAccessToken({ sub: user.id, email: user.email });
-  return { userId: user.id, accessToken, refreshToken: newRefreshToken };
+  // The user is returned too so a silent refresh on page load restores the whole
+  // session, not just the token -- otherwise the client has no idea who is
+  // logged in until the next explicit login.
+  return {
+    user: { id: user.id, email: user.email, createdAt: user.createdAt },
+    accessToken,
+    refreshToken: newRefreshToken,
+  };
 }
 
 export async function revokeRefreshToken(raw: string): Promise<void> {

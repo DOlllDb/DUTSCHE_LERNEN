@@ -13,6 +13,19 @@ export const T = {
     en: '20 new words every day · A review test every 7 days · Progress is saved automatically',
   },
   weekLabel: { de: 'Woche', en: 'Week' },
+  logoutBtn: { de: 'Abmelden', en: 'Logout' },
+  themeToDark: { de: 'Nachtmodus einschalten', en: 'Switch to night mode' },
+  themeToLight: { de: 'Tagmodus einschalten', en: 'Switch to day mode' },
+  tabWeeks: { de: 'Wochen', en: 'Weeks' },
+  tabTopics: { de: 'Themen', en: 'Topics' },
+  topicMeta: {
+    de: (range: string, n: number) => `Tag ${range} · ${n} Wörter`,
+    en: (range: string, n: number) => `Day ${range} · ${n} words`,
+  },
+  topicGoToDay: {
+    de: (day: number) => `Zu Tag ${day} springen`,
+    en: (day: number) => `Jump to day ${day}`,
+  },
   practiceTestButton: { de: 'Übungstest', en: 'Practice test' },
   practiceTestTitle: { de: 'Übungstest', en: 'Practice test' },
   practiceTestIntro: {

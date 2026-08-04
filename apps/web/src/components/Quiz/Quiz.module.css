@@ -63,13 +63,13 @@
   background: var(--paper-2);
 }
 .optBtn.correct {
-  background: #e4f2e9;
+  background: var(--correct-bg);
   border-color: var(--green);
   color: var(--green);
   font-weight: 700;
 }
 .optBtn.wrong {
-  background: #fbe9e4;
+  background: var(--wrong-bg);
   border-color: var(--red-soft);
   color: var(--red);
   font-weight: 700;

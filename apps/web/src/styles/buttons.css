@@ -26,15 +26,15 @@
   border-color: var(--ink);
 }
 .btn.primary:hover {
-  background: #38312b;
+  background: var(--ink-hover);
 }
 .btn.gold {
   background: var(--gold);
-  color: #fff;
+  color: var(--on-accent);
   border-color: var(--gold);
 }
 .btn.gold:hover {
-  background: #a3781f;
+  background: var(--gold-hover);
 }
 .btn.ghost {
   background: transparent;
@@ -48,20 +48,20 @@
   color: var(--green);
 }
 .btn.know:hover {
-  background: #eaf3ee;
+  background: var(--green-tint);
 }
 .btn.learning {
   border-color: var(--red-soft);
   color: var(--red);
 }
 .btn.learning:hover {
-  background: #faf0ec;
+  background: var(--red-tint);
 }
 .btn.active-hide {
   background: var(--red);
-  color: #fff;
+  color: var(--on-accent);
   border-color: var(--red);
 }
 .btn.active-hide:hover {
-  background: #8f2c19;
+  background: var(--red-hover);
 }

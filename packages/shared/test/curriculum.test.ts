@@ -13,6 +13,7 @@ import {
   weekWordRefs,
   filterStillLearning,
   isStillLearning,
+  curriculumTopics,
 } from '../src/curriculum/logic.js';
 import type { QuizQuestion } from '../src/curriculum/logic.js';
 import { emptyProgress, wordKey } from '../src/progress/types.js';
@@ -203,6 +204,43 @@ describe('word ref helpers', () => {
     ]);
     expect(refs[0]).toMatchObject({ day: 1, idx: 0 });
     expect(refs[20]).toMatchObject({ day: 3, idx: 0 });
+  });
+});
+
+describe('curriculumTopics', () => {
+  const topics = curriculumTopics(CURRICULUM);
+
+  it('covers every word exactly once across all topics', () => {
+    expect(topics.reduce((n, t) => n + t.refs.length, 0)).toBe(1200);
+    const keys = new Set(topics.flatMap((t) => t.refs.map((r) => wordKey(r.day, r.idx))));
+    expect(keys.size).toBe(1200);
+  });
+
+  it('lists topics in order of first appearance', () => {
+    expect(topics[0].cat).toBe('Zahlen');
+    expect(topics[0].cat_en).toBe('Numbers');
+    const firstDays = topics.map((t) => t.days[0]);
+    expect(firstDays).toEqual([...firstDays].sort((a, b) => a - b));
+  });
+
+  it('records the ascending, de-duplicated days a topic spans', () => {
+    const zahlen = topics.find((t) => t.cat === 'Zahlen')!;
+    expect(zahlen.days).toEqual([1, 2]);
+    expect(zahlen.refs).toHaveLength(30);
+
+    for (const t of topics) {
+      expect(new Set(t.days).size).toBe(t.days.length);
+      expect(t.days).toEqual([...t.days].sort((a, b) => a - b));
+      // every ref really belongs to one of the recorded days
+      for (const r of t.refs) expect(t.days).toContain(r.day);
+    }
+  });
+
+  it('gives every topic a non-empty label pair', () => {
+    for (const t of topics) {
+      expect(t.cat.length).toBeGreaterThan(0);
+      expect(t.cat_en.length).toBeGreaterThan(0);
+    }
   });
 });
 

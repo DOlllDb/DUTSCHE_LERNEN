@@ -137,7 +137,15 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (!result) throw new ApiError(401, 'INVALID_REFRESH_TOKEN', 'Refresh token is invalid, expired, or revoked.');
 
     reply.setCookie(REFRESH_COOKIE, result.refreshToken, cookieOptions);
-    reply.send({ accessToken: result.accessToken, refreshToken: result.refreshToken });
+    reply.send({
+      user: {
+        id: result.user.id,
+        email: result.user.email,
+        createdAt: result.user.createdAt.toISOString(),
+      },
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
   });
 
   app.post('/logout', async (req, reply) => {

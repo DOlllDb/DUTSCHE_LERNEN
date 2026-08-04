@@ -1,0 +1,18 @@
+/* Deliberately matches .toggle in LangToggle.module.css: the two sit side by
+   side in the header and should read as one pair of controls. */
+.toggle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  padding: 7px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  cursor: pointer;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+}
+.toggle:hover {
+  background: var(--paper-2);
+}

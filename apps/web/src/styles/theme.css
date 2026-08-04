@@ -1,12 +1,25 @@
+/*
+ * Palette. Every colour the app uses is a token here so the night theme can
+ * swap the whole set; component CSS should never hardcode a hex value.
+ *
+ * The dark block appears twice on purpose: once behind a prefers-color-scheme
+ * query (so an untouched app follows the OS) and once behind an explicit
+ * [data-theme='dark'] (so the toggle can override the OS in either direction).
+ */
 :root {
+  color-scheme: light;
+
   --paper: #faf6ee;
   --paper-2: #f1eada;
   --ink: #241f1c;
   --ink-soft: #5b5147;
+  --ink-hover: #38312b;
   --red: #a8351f;
   --red-soft: #c9663f;
+  --red-hover: #8f2c19;
   --gold: #b8862e;
   --gold-soft: #e7c77b;
+  --gold-hover: #a3781f;
   --green: #3e6b4f;
   /* Pale status tints for list rows -- deliberately softer than the quiz's
      answer highlights, since a whole column of saturated rows would fight the
@@ -15,12 +28,99 @@
   --green-line: #bcd2c3;
   --red-tint: #fbf0ec;
   --red-line: #ecc8b9;
+  /* Quiz answer highlights: a touch more saturated than the row tints. */
+  --correct-bg: #e4f2e9;
+  --wrong-bg: #fbe9e4;
   --line: #e0d5c0;
   --card: #fffdf8;
+  /* Text that sits on a filled gold/red button. */
+  --on-accent: #ffffff;
+  /* The flashcard's reverse side, which is dark even in the light theme. */
+  --card-back-from: #2a2420;
+  --card-back-to: #1c1815;
+  --card-back-line: #3a322c;
+  --card-back-text: #faf6ee;
+  --card-back-hint: #b7ada0;
+  /* Hover state for a masked (hidden) word in the self-test list. */
+  --mask-hover: #4a4038;
   --radius: 14px;
   --shadow:
     0 1px 2px rgba(36, 31, 28, 0.04),
     0 8px 24px -12px rgba(36, 31, 28, 0.18);
+}
+
+/* Warm dark: the same paper-and-ink character, inverted, with the accent
+   colours lightened so they stay legible on a dark surface. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --paper: #1a1613;
+    --paper-2: #241f1a;
+    --ink: #f0e9dd;
+    --ink-soft: #a89c8c;
+    --ink-hover: #e2dacd;
+    --red: #e08060;
+    --red-soft: #cf7a52;
+    --red-hover: #f0937a;
+    --gold: #d9a441;
+    --gold-soft: #e7c77b;
+    --gold-hover: #e8b855;
+    --green: #7fb08d;
+    --green-tint: #1f2d24;
+    --green-line: #38513f;
+    --red-tint: #2f221c;
+    --red-line: #55392c;
+    --correct-bg: #1f3328;
+    --wrong-bg: #35231d;
+    --line: #3a322c;
+    --card: #221d19;
+    --on-accent: #1a1613;
+    --card-back-from: #3a322c;
+    --card-back-to: #2a2420;
+    --card-back-line: #4a4038;
+    --card-back-text: #f0e9dd;
+    --card-back-hint: #a89c8c;
+    --mask-hover: #cbbfae;
+    --shadow:
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 8px 24px -12px rgba(0, 0, 0, 0.7);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #1a1613;
+  --paper-2: #241f1a;
+  --ink: #f0e9dd;
+  --ink-soft: #a89c8c;
+  --ink-hover: #e2dacd;
+  --red: #e08060;
+  --red-soft: #cf7a52;
+  --red-hover: #f0937a;
+  --gold: #d9a441;
+  --gold-soft: #e7c77b;
+  --gold-hover: #e8b855;
+  --green: #7fb08d;
+  --green-tint: #1f2d24;
+  --green-line: #38513f;
+  --red-tint: #2f221c;
+  --red-line: #55392c;
+  --correct-bg: #1f3328;
+  --wrong-bg: #35231d;
+  --line: #3a322c;
+  --card: #221d19;
+  --on-accent: #1a1613;
+  --card-back-from: #3a322c;
+  --card-back-to: #2a2420;
+  --card-back-line: #4a4038;
+  --card-back-text: #f0e9dd;
+  --card-back-hint: #a89c8c;
+  --mask-hover: #cbbfae;
+  --shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 24px -12px rgba(0, 0, 0, 0.7);
 }
 
 * {
@@ -39,6 +139,8 @@ body {
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  /* No transition here on purpose: animating the full-page background makes
+     the theme switch feel laggy rather than smooth. */
 }
 
 ::-webkit-scrollbar {

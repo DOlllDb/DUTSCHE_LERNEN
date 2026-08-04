@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './state/AuthContext.js';
 import { LangProvider } from './state/LangContext.js';
+import { ThemeProvider } from './state/ThemeContext.js';
 import { ProgressProvider } from './state/ProgressContext.js';
 import { LoginPage } from './routes/LoginPage.js';
 import { RegisterPage } from './routes/RegisterPage.js';
@@ -26,23 +27,25 @@ function AuthenticatedApp() {
 export function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <LangProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route
-              path="/"
-              element={
-                <RequireAuth>
-                  <AuthenticatedApp />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </LangProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <LangProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
+              <Route
+                path="/"
+                element={
+                  <RequireAuth>
+                    <AuthenticatedApp />
+                  </RequireAuth>
+                }
+              />
+            </Routes>
+          </LangProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
