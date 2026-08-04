@@ -92,10 +92,12 @@
   max-width: 420px;
   margin-top: 6px;
 }
+/* Square, matching the shared WordStatusToggle swatch, so a word's status reads
+   the same here as it does in the All-words list and the test results. */
 .wdot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
   background: var(--line);
   cursor: pointer;
   border: none;

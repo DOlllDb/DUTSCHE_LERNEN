@@ -120,35 +120,6 @@
 .reviewItem.miss .reviewDe {
   color: var(--red);
 }
-.markKnownBtn {
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--ink-soft);
-  font-size: 12px;
-  line-height: 1;
-  padding: 0;
-  cursor: pointer;
-  transition:
-    background 0.12s ease,
-    border-color 0.12s ease,
-    color 0.12s ease;
-}
-.markKnownBtn:hover:not(:disabled) {
-  background: var(--green-tint);
-  border-color: var(--green-line);
-  color: var(--green);
-}
-.markKnownBtn.isKnown {
-  background: var(--green);
-  border-color: var(--green);
-  color: var(--paper);
-  cursor: default;
-}
-
 /* Generic segmented picker, shared by the direction and source selectors on
    both the weekly test and the practice test intro screens.
    Must stay after .quizIntro so .pickerHint's font-size wins over

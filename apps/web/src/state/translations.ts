@@ -44,8 +44,6 @@ export const T = {
     de: 'Noch keine Wörter als „noch am Lernen“ markiert — der Test wird mit anderen Wörtern aufgefüllt.',
     en: 'No words marked "still learning" yet — the test will be filled with other words.',
   },
-  markKnown: { de: 'Als gelernt markieren', en: 'Mark as learned' },
-  markedKnown: { de: 'Als gelernt markiert ✓', en: 'Marked as learned ✓' },
   statusUnset: {
     de: 'Nicht markiert — klicken für „kenne ich“',
     en: 'Not marked — click for "I know it"',

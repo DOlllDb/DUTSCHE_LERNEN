@@ -1,0 +1,24 @@
+/* The single status control used everywhere a word's known/still-learning state
+   is shown or set: the All-words list and the end-of-test review list.
+   Grey = unmarked, green = learned, orange = still learning. */
+.swatch {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--line);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.swatch:hover {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+.swatch.known {
+  background: var(--green);
+}
+.swatch.learning {
+  background: var(--red-soft);
+}

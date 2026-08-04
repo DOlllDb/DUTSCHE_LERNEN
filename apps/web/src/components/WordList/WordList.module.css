@@ -71,26 +71,5 @@
 .wlEn {
   color: var(--ink-soft);
 }
-/* Same colour vocabulary as the flashcard progress dots, but larger: here it is
-   a primary tap target rather than an indicator. */
-.statusDot {
-  flex: 0 0 auto;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--line);
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: background 0.12s ease;
-}
-.statusDot:hover {
-  outline: 2px solid var(--line);
-  outline-offset: 2px;
-}
-.statusDot.known {
-  background: var(--green);
-}
-.statusDot.learningFlag {
-  background: var(--red-soft);
-}
+/* The status control itself lives in WordStatusToggle, shared with the
+   end-of-test review list. */

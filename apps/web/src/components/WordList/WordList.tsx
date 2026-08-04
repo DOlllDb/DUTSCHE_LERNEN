@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import type { Day, WordStatus } from '@deutsch-lernen/shared';
+import type { Day } from '@deutsch-lernen/shared';
 import { wordKey } from '@deutsch-lernen/shared';
 import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
+import { WordStatusToggle } from '../WordStatusToggle/WordStatusToggle.js';
 import styles from './WordList.module.css';
 
 interface Props {
@@ -17,7 +18,7 @@ export function WordList({ day, doneAlready, onToggleDone }: Props) {
   const [hideMode, setHideMode] = useState<HideMode>('none');
   const [revealedDe, setRevealedDe] = useState<Set<number>>(new Set());
   const [revealedEn, setRevealedEn] = useState<Set<number>>(new Set());
-  const { progress, setWordStatus } = useProgress();
+  const { progress } = useProgress();
   const { t } = useLang();
 
   function toggleHide(mode: 'de' | 'en') {
@@ -55,11 +56,6 @@ export function WordList({ day, doneAlready, onToggleDone }: Props) {
           const deMasked = hideMode === 'de' && !revealedDe.has(i);
           const enMasked = hideMode === 'en' && !revealedEn.has(i);
           const status = progress.wordStatus[wordKey(day.day, i)];
-          // Unset lands on 'known' first, then toggles between the two states.
-          // There is deliberately no way back to unset.
-          const next: WordStatus = status === 'known' ? 'learning' : 'known';
-          const statusLabel =
-            status === 'known' ? t('statusKnown') : status === 'learning' ? t('statusLearning') : t('statusUnset');
 
           return (
             <div
@@ -86,19 +82,7 @@ export function WordList({ day, doneAlready, onToggleDone }: Props) {
                   {word.en}
                 </span>
               </div>
-              <button
-                type="button"
-                className={[
-                  styles.statusDot,
-                  status === 'known' && styles.known,
-                  status === 'learning' && styles.learningFlag,
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                title={statusLabel}
-                aria-label={statusLabel}
-                onClick={() => setWordStatus(day.day, i, next)}
-              />
+              <WordStatusToggle day={day.day} idx={i} />
             </div>
           );
         })}
