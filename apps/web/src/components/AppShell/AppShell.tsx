@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { computeStats, totalWords, getLearnedWords } from '@deutsch-lernen/shared';
+import { computeStats, totalWords } from '@deutsch-lernen/shared';
 import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
 import { useAuth } from '../../state/AuthContext.js';
@@ -73,7 +73,7 @@ export function AppShell() {
           }}
         />
         {practiceMode ? (
-          <PracticeQuiz pool={getLearnedWords(curriculum, progress)} onExit={() => setPracticeMode(false)} />
+          <PracticeQuiz onExit={() => setPracticeMode(false)} />
         ) : (
           <DayView key={selectedDay} dayNum={selectedDay} />
         )}

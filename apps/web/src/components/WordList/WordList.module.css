@@ -37,17 +37,60 @@
 }
 .wlItem {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   gap: 10px;
   padding: 9px 12px;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 9px;
   font-size: 13px;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+/* Holds the DE/EN pair so they keep spreading apart now that the status button
+   is a third child of the row. */
+.wlWords {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.wlItem.isKnown {
+  background: var(--green-tint);
+  border-color: var(--green-line);
+}
+.wlItem.isLearning {
+  background: var(--red-tint);
+  border-color: var(--red-line);
 }
 .wlDe {
   font-weight: 600;
 }
 .wlEn {
   color: var(--ink-soft);
+}
+/* Same colour vocabulary as the flashcard progress dots, but larger: here it is
+   a primary tap target rather than an indicator. */
+.statusDot {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--line);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.statusDot:hover {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+.statusDot.known {
+  background: var(--green);
+}
+.statusDot.learningFlag {
+  background: var(--red-soft);
 }

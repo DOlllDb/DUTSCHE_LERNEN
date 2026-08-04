@@ -77,9 +77,11 @@
 .optBtn:disabled {
   cursor: default;
 }
+/* Wider than .quizIntro (which is prose): review rows carry a mark-as-learned
+   button, and the panel column has roughly 700px of usable width on desktop. */
 .quizResult {
   text-align: center;
-  max-width: 440px;
+  max-width: 600px;
   margin: auto;
 }
 .quizScore {
@@ -94,21 +96,95 @@
   color: var(--ink-soft);
   font-size: 14px;
 }
+/* Deliberately unbounded: the whole tested word list should be visible at once,
+   growing the panel like the All-words tab does, rather than scrolling inside a
+   fixed-height box. */
 .reviewList {
   text-align: left;
   margin-top: 16px;
-  max-height: 220px;
-  overflow-y: auto;
   border-top: 1px solid var(--line);
   padding-top: 10px;
 }
 .reviewItem {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   font-size: 13px;
   padding: 6px 0;
   border-bottom: 1px solid var(--line);
 }
+.reviewAnswer {
+  margin-left: auto;
+  text-align: right;
+}
 .reviewItem.miss .reviewDe {
   color: var(--red);
+}
+.markKnownBtn {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+.markKnownBtn:hover:not(:disabled) {
+  background: var(--green-tint);
+  border-color: var(--green-line);
+  color: var(--green);
+}
+.markKnownBtn.isKnown {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--paper);
+  cursor: default;
+}
+
+/* Generic segmented picker, shared by the direction and source selectors on
+   both the weekly test and the practice test intro screens.
+   Must stay after .quizIntro so .pickerHint's font-size wins over
+   `.quizIntro p` (both are single-class specificity, so order decides). */
+.pickerLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  font-weight: 700;
+  margin-top: 14px;
+}
+.pickerRow {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 8px 0 4px;
+}
+.pickerBtn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.pickerBtn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.pickerHint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 4px 0 0;
 }

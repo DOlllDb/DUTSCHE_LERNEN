@@ -8,6 +8,13 @@
   --gold: #b8862e;
   --gold-soft: #e7c77b;
   --green: #3e6b4f;
+  /* Pale status tints for list rows -- deliberately softer than the quiz's
+     answer highlights, since a whole column of saturated rows would fight the
+     paper palette. */
+  --green-tint: #eef4f0;
+  --green-line: #bcd2c3;
+  --red-tint: #fbf0ec;
+  --red-line: #ecc8b9;
   --line: #e0d5c0;
   --card: #fffdf8;
   --radius: 14px;

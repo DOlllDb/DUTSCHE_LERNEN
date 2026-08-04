@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import type { Curriculum, Day, QuizQuestion } from '@deutsch-lernen/shared';
-import { buildQuiz } from '@deutsch-lernen/shared';
+import type { Curriculum, Day, QuizQuestion, QuizSource } from '@deutsch-lernen/shared';
+import { buildQuiz, weekWordRefs, filterStillLearning } from '@deutsch-lernen/shared';
 import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
 import { QuizRunner } from './QuizRunner.js';
+import { QuizSourcePicker } from './QuizSourcePicker.js';
 import styles from './Quiz.module.css';
 
 interface Props {
@@ -19,6 +20,9 @@ interface Attempt {
 
 export function Quiz({ day, curriculum, onBackToCards }: Props) {
   const [attempt, setAttempt] = useState<Attempt | null>(null);
+  // Lives outside Attempt so "Try again" returns to the intro with the choice
+  // the user made last time still selected.
+  const [source, setSource] = useState<QuizSource>('all');
   const { progress, submitQuizResult } = useProgress();
   const { t } = useLang();
 
@@ -26,9 +30,13 @@ export function Quiz({ day, curriculum, onBackToCards }: Props) {
   const prevTest = idx > 0 ? curriculum.test_days[idx - 1] : 0;
   const rangeLabel = `${prevTest + 1}–${day.day}`;
   const prevScore = progress.testScores[day.day];
+  const learningCount = filterStillLearning(weekWordRefs(curriculum, day.day), progress).length;
 
   function start() {
-    setAttempt((prev) => ({ id: (prev?.id ?? 0) + 1, questions: buildQuiz(curriculum, day.day) }));
+    setAttempt((prev) => ({
+      id: (prev?.id ?? 0) + 1,
+      questions: buildQuiz(curriculum, progress, day.day, source),
+    }));
   }
 
   if (!attempt) {
@@ -41,6 +49,7 @@ export function Quiz({ day, curriculum, onBackToCards }: Props) {
             <strong>{t('lastScore')}</strong> {prevScore.score}/{prevScore.total}
           </p>
         )}
+        <QuizSourcePicker value={source} onChange={setSource} learningCount={learningCount} />
         <button className="btn gold" style={{ marginTop: 14 }} onClick={start}>
           {t('startQuiz')}
         </button>

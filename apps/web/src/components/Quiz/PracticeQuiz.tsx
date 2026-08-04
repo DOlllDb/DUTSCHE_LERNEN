@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import type { QuizDirection, QuizQuestion, Word } from '@deutsch-lernen/shared';
-import { buildPracticeQuiz } from '@deutsch-lernen/shared';
+import type { QuizDirection, QuizQuestion, QuizSource } from '@deutsch-lernen/shared';
+import { buildPracticeQuiz, getLearnedWordRefs, filterStillLearning } from '@deutsch-lernen/shared';
+import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
 import { QuizRunner } from './QuizRunner.js';
+import { QuizSourcePicker } from './QuizSourcePicker.js';
 import quizStyles from './Quiz.module.css';
-import styles from './PracticeQuiz.module.css';
 import panelStyles from '../DayView/DayView.module.css';
 
 interface Props {
-  pool: Word[];
   onExit: () => void;
 }
 
 interface Attempt {
   id: number;
-  direction: QuizDirection;
   questions: QuizQuestion[];
 }
 
@@ -24,13 +23,25 @@ const DIRECTIONS: { value: QuizDirection; labelKey: 'directionDeEn' | 'direction
   { value: 'mixed', labelKey: 'directionMixed' },
 ];
 
-export function PracticeQuiz({ pool, onExit }: Props) {
+export function PracticeQuiz({ onExit }: Props) {
   const [direction, setDirection] = useState<QuizDirection>('mixed');
+  const [source, setSource] = useState<QuizSource>('all');
   const [attempt, setAttempt] = useState<Attempt | null>(null);
+  const { curriculum, progress } = useProgress();
   const { t } = useLang();
 
+  if (!curriculum) return null;
+
+  // Captured after the guard so the closure below sees a non-nullable value.
+  const loaded = curriculum;
+  const learnedRefs = getLearnedWordRefs(loaded, progress);
+  const learningCount = filterStillLearning(learnedRefs, progress).length;
+
   function start() {
-    setAttempt((prev) => ({ id: (prev?.id ?? 0) + 1, direction, questions: buildPracticeQuiz(pool, direction) }));
+    setAttempt((prev) => ({
+      id: (prev?.id ?? 0) + 1,
+      questions: buildPracticeQuiz(loaded, progress, direction, source),
+    }));
   }
 
   if (!attempt) {
@@ -38,23 +49,29 @@ export function PracticeQuiz({ pool, onExit }: Props) {
       <div className={panelStyles.panel}>
         <div className={quizStyles.quizIntro}>
           <h3>{t('practiceTestTitle')}</h3>
-          {pool.length === 0 ? (
+          {learnedRefs.length === 0 ? (
             <p>{t('practiceTestEmpty')}</p>
           ) : (
             <>
-              <p>{t('practiceTestIntro', pool.length)}</p>
-              <div className={styles.directionPicker}>
+              <p>{t('practiceTestIntro', learnedRefs.length)}</p>
+
+              <div className={quizStyles.pickerLabel}>{t('directionLabel')}</div>
+              <div className={quizStyles.pickerRow}>
                 {DIRECTIONS.map((d) => (
                   <button
                     key={d.value}
-                    className={`${styles.directionBtn} ${direction === d.value ? styles.active : ''}`}
+                    type="button"
+                    className={`${quizStyles.pickerBtn} ${direction === d.value ? quizStyles.active : ''}`}
                     onClick={() => setDirection(d.value)}
                   >
                     {t(d.labelKey)}
                   </button>
                 ))}
               </div>
-              <button className="btn gold" onClick={start}>
+
+              <QuizSourcePicker value={source} onChange={setSource} learningCount={learningCount} />
+
+              <button className="btn gold" style={{ marginTop: 14 }} onClick={start}>
                 {t('startQuiz')}
               </button>
             </>

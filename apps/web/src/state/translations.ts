@@ -27,6 +27,37 @@ export const T = {
   directionDeEn: { de: 'Deutsch → Englisch', en: 'German → English' },
   directionEnDe: { de: 'Englisch → Deutsch', en: 'English → German' },
   directionMixed: { de: 'Gemischt', en: 'Mixed' },
+  sourceLabel: { de: 'Wortauswahl', en: 'Word selection' },
+  sourceAll: { de: 'Alle Wörter', en: 'All words' },
+  sourceLearning: { de: 'Nur „noch am Lernen“', en: 'Only still learning' },
+  sourceLearningHint: {
+    de: (n: number) =>
+      n === 1
+        ? '1 Wort hier ist als „noch am Lernen“ markiert. Da das nicht für 20 Fragen reicht, wird mit weiteren Wörtern aufgefüllt.'
+        : `${n} Wörter hier sind als „noch am Lernen“ markiert. Reicht das nicht für 20 Fragen, wird mit weiteren Wörtern aufgefüllt.`,
+    en: (n: number) =>
+      n === 1
+        ? '1 word here is marked "still learning". Since that\'s not enough for 20 questions, the rest is topped up with other words.'
+        : `${n} words here are marked "still learning". If that's not enough for 20 questions, the rest is topped up with other words.`,
+  },
+  sourceLearningNone: {
+    de: 'Noch keine Wörter als „noch am Lernen“ markiert — der Test wird mit anderen Wörtern aufgefüllt.',
+    en: 'No words marked "still learning" yet — the test will be filled with other words.',
+  },
+  markKnown: { de: 'Als gelernt markieren', en: 'Mark as learned' },
+  markedKnown: { de: 'Als gelernt markiert ✓', en: 'Marked as learned ✓' },
+  statusUnset: {
+    de: 'Nicht markiert — klicken für „kenne ich“',
+    en: 'Not marked — click for "I know it"',
+  },
+  statusKnown: {
+    de: 'Kenne ich ✓ — klicken für „noch am Lernen“',
+    en: 'I know it ✓ — click for "still learning"',
+  },
+  statusLearning: {
+    de: 'Noch am Lernen — klicken für „kenne ich“',
+    en: 'Still learning — click for "I know it"',
+  },
   practiceAgain: { de: 'Nochmal üben', en: 'Practice again' },
   donePracticing: { de: 'Fertig', en: 'Done' },
   backToApp: { de: '← Zurück', en: '← Back' },

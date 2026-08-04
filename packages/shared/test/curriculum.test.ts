@@ -7,10 +7,26 @@ import {
   buildQuiz,
   computeStats,
   shuffle,
-  getLearnedWords,
+  getLearnedWordRefs,
   buildPracticeQuiz,
+  allWordRefs,
+  weekWordRefs,
+  filterStillLearning,
+  isStillLearning,
 } from '../src/curriculum/logic.js';
-import { emptyProgress } from '../src/progress/types.js';
+import type { QuizQuestion } from '../src/curriculum/logic.js';
+import { emptyProgress, wordKey } from '../src/progress/types.js';
+import type { Progress } from '../src/progress/types.js';
+
+/** Builds a Progress with the given [day, idx] pairs flagged 'learning'. */
+function learningProgress(pairs: [number, number][], doneDays: number[] = []): Progress {
+  const p = emptyProgress();
+  for (const d of doneDays) p.doneDays[d] = true;
+  for (const [day, idx] of pairs) p.wordStatus[wordKey(day, idx)] = 'learning';
+  return p;
+}
+
+const keysOf = (questions: QuizQuestion[]) => new Set(questions.map((q) => wordKey(q.day, q.idx)));
 
 describe('curriculum data', () => {
   it('has 60 days', () => {
@@ -53,23 +69,83 @@ describe('weekBlocks', () => {
 });
 
 describe('buildQuiz', () => {
-  it('builds 20 questions for a full week, each with 4 options including the correct answer', () => {
-    const questions = buildQuiz(CURRICULUM, 7);
+  it('builds 20 questions for a full week, each with 4 distinct options including the correct answer', () => {
+    const questions = buildQuiz(CURRICULUM, emptyProgress(), 7, 'all');
     expect(questions).toHaveLength(20);
     for (const q of questions) {
-      expect(q.options).toHaveLength(4);
+      expect(new Set(q.options).size).toBe(4);
       expect(q.options).toContain(q.correct);
       expect(['de-en', 'en-de']).toContain(q.direction);
     }
   });
 
-  it('caps question count at the available pool size for small pools', () => {
-    // day 60 is a test day covering only days 57-60 (fewer than 20 words is not
-    // actually the case here since it's 4 days * 20 words = 80, but this proves
-    // the min() cap logic doesn't throw and respects pool size either way)
-    const questions = buildQuiz(CURRICULUM, 60);
-    expect(questions.length).toBeLessThanOrEqual(20);
-    expect(questions.length).toBeGreaterThan(0);
+  it('builds a full quiz for the short final block (days 57-60)', () => {
+    const questions = buildQuiz(CURRICULUM, emptyProgress(), 60, 'all');
+    expect(questions).toHaveLength(20);
+  });
+
+  it('carries curriculum position that resolves back to the tested word', () => {
+    for (const q of buildQuiz(CURRICULUM, emptyProgress(), 7, 'all')) {
+      const w = getDay(CURRICULUM, q.day)!.words[q.idx];
+      expect(q.direction === 'de-en' ? w.de : w.en).toBe(q.prompt);
+      expect(q.direction === 'de-en' ? w.en : w.de).toBe(q.correct);
+    }
+  });
+
+  it('never repeats a word within one quiz', () => {
+    const questions = buildQuiz(CURRICULUM, emptyProgress(), 14, 'all');
+    expect(keysOf(questions).size).toBe(questions.length);
+  });
+
+  it("draws only from its own week by default, so the top-up never fires", () => {
+    for (const q of buildQuiz(CURRICULUM, emptyProgress(), 14, 'all')) {
+      expect(q.day).toBeGreaterThan(7);
+      expect(q.day).toBeLessThanOrEqual(14);
+    }
+  });
+});
+
+describe('buildQuiz with source: learning', () => {
+  it('stays within the week when enough words are flagged there', () => {
+    const flagged: [number, number][] = [];
+    for (let day = 1; day <= 7; day++) for (let idx = 0; idx < 4; idx++) flagged.push([day, idx]);
+    const questions = buildQuiz(CURRICULUM, learningProgress(flagged), 7, 'learning');
+
+    expect(questions).toHaveLength(20);
+    for (const q of questions) expect(q.day).toBeLessThanOrEqual(7);
+  });
+
+  it('tops up from still-learning words in other weeks before unflagged ones', () => {
+    const flagged: [number, number][] = [
+      [1, 0],
+      [2, 5],
+      [15, 3],
+      [16, 7],
+      [22, 1],
+    ];
+    const questions = buildQuiz(CURRICULUM, learningProgress(flagged), 7, 'learning');
+    const keys = keysOf(questions);
+
+    expect(questions).toHaveLength(20);
+    // all 5 flagged words must appear -- they are drawn before any filler
+    for (const [day, idx] of flagged) expect(keys.has(wordKey(day, idx))).toBe(true);
+  });
+
+  it('still yields 20 four-option questions from a single flagged word', () => {
+    const questions = buildQuiz(CURRICULUM, learningProgress([[1, 0]]), 7, 'learning');
+
+    expect(questions).toHaveLength(20);
+    expect(keysOf(questions).size).toBe(20);
+    for (const q of questions) {
+      expect(new Set(q.options).size).toBe(4);
+      expect(q.options).toContain(q.correct);
+    }
+  });
+
+  it('falls back to the wider curriculum when nothing is flagged at all', () => {
+    const questions = buildQuiz(CURRICULUM, emptyProgress(), 7, 'learning');
+    expect(questions).toHaveLength(20);
+    expect(keysOf(questions).size).toBe(20);
   });
 });
 
@@ -91,40 +167,118 @@ describe('computeStats', () => {
   });
 });
 
-describe('getLearnedWords', () => {
-  it('returns nothing for empty progress', () => {
-    expect(getLearnedWords(CURRICULUM, emptyProgress())).toEqual([]);
+describe('word ref helpers', () => {
+  it('allWordRefs covers the whole curriculum with correct positions', () => {
+    const refs = allWordRefs(CURRICULUM);
+    expect(refs).toHaveLength(1200);
+    expect(refs[0]).toMatchObject({ day: 1, idx: 0 });
+    expect(refs[0].word).toEqual(getDay(CURRICULUM, 1)!.words[0]);
+    expect(refs[20]).toMatchObject({ day: 2, idx: 0 });
   });
 
-  it('returns only words from days marked done', () => {
+  it('weekWordRefs covers days since the previous test day', () => {
+    expect(weekWordRefs(CURRICULUM, 7)).toHaveLength(140);
+    const second = weekWordRefs(CURRICULUM, 14);
+    expect(second).toHaveLength(140);
+    for (const r of second) {
+      expect(r.day).toBeGreaterThan(7);
+      expect(r.day).toBeLessThanOrEqual(14);
+    }
+  });
+
+  it('getLearnedWordRefs returns nothing for empty progress', () => {
+    expect(getLearnedWordRefs(CURRICULUM, emptyProgress())).toEqual([]);
+  });
+
+  it('getLearnedWordRefs returns only words from days marked done, with positions', () => {
     const progress = emptyProgress();
     progress.doneDays[1] = true;
     progress.doneDays[3] = true;
-    const words = getLearnedWords(CURRICULUM, progress);
-    expect(words).toHaveLength(40);
-    expect(words).toEqual([...getDay(CURRICULUM, 1)!.words, ...getDay(CURRICULUM, 3)!.words]);
+    const refs = getLearnedWordRefs(CURRICULUM, progress);
+
+    expect(refs).toHaveLength(40);
+    expect(refs.map((r) => r.word)).toEqual([
+      ...getDay(CURRICULUM, 1)!.words,
+      ...getDay(CURRICULUM, 3)!.words,
+    ]);
+    expect(refs[0]).toMatchObject({ day: 1, idx: 0 });
+    expect(refs[20]).toMatchObject({ day: 3, idx: 0 });
+  });
+});
+
+describe('still-learning filter', () => {
+  it('treats an unset status as NOT still-learning', () => {
+    expect(filterStillLearning(weekWordRefs(CURRICULUM, 7), emptyProgress())).toEqual([]);
+  });
+
+  it('treats a known status as NOT still-learning', () => {
+    const progress = emptyProgress();
+    progress.wordStatus[wordKey(1, 0)] = 'known';
+    expect(filterStillLearning(weekWordRefs(CURRICULUM, 7), progress)).toEqual([]);
+    expect(isStillLearning(progress, { word: getDay(CURRICULUM, 1)!.words[0], day: 1, idx: 0 })).toBe(false);
+  });
+
+  it('picks up only the explicitly flagged words', () => {
+    const progress = learningProgress([
+      [1, 0],
+      [2, 5],
+    ]);
+    const refs = filterStillLearning(weekWordRefs(CURRICULUM, 7), progress);
+
+    expect(refs).toHaveLength(2);
+    expect(refs.map((r) => ({ day: r.day, idx: r.idx }))).toEqual([
+      { day: 1, idx: 0 },
+      { day: 2, idx: 5 },
+    ]);
   });
 });
 
 describe('buildPracticeQuiz', () => {
+  const doneFirstTwoDays = () => learningProgress([], [1, 2]);
+
   it('respects an explicit direction for every question', () => {
-    const pool = getDay(CURRICULUM, 1)!.words;
-    const deToEn = buildPracticeQuiz(pool, 'de-en');
+    const progress = doneFirstTwoDays();
+
+    const deToEn = buildPracticeQuiz(CURRICULUM, progress, 'de-en');
     expect(deToEn.length).toBeGreaterThan(0);
     for (const q of deToEn) expect(q.direction).toBe('de-en');
 
-    const enToDe = buildPracticeQuiz(pool, 'en-de');
+    const enToDe = buildPracticeQuiz(CURRICULUM, progress, 'en-de');
     for (const q of enToDe) expect(q.direction).toBe('en-de');
   });
 
   it('mixes directions when asked', () => {
-    const pool = [...getDay(CURRICULUM, 1)!.words, ...getDay(CURRICULUM, 2)!.words];
-    const questions = buildPracticeQuiz(pool, 'mixed');
+    const questions = buildPracticeQuiz(CURRICULUM, doneFirstTwoDays(), 'mixed');
     expect(questions.length).toBeGreaterThan(0);
     for (const q of questions) expect(['de-en', 'en-de']).toContain(q.direction);
   });
 
-  it('returns an empty quiz for an empty pool without throwing', () => {
-    expect(buildPracticeQuiz([], 'mixed')).toEqual([]);
+  it('returns an empty quiz when no day has been completed yet', () => {
+    expect(buildPracticeQuiz(CURRICULUM, emptyProgress(), 'mixed')).toEqual([]);
+  });
+
+  it('draws only from learned days by default', () => {
+    for (const q of buildPracticeQuiz(CURRICULUM, doneFirstTwoDays(), 'mixed', 'all')) {
+      expect(q.day).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('prefers other learned words as filler for a sparse still-learning pool', () => {
+    // 40 learned words, only 1 flagged -- the 19 filler slots should all still
+    // come from the learned days rather than the wider curriculum.
+    const progress = learningProgress([[1, 0]], [1, 2]);
+    const questions = buildPracticeQuiz(CURRICULUM, progress, 'mixed', 'learning');
+
+    expect(questions).toHaveLength(20);
+    expect(keysOf(questions).has(wordKey(1, 0))).toBe(true);
+    for (const q of questions) expect(q.day).toBeLessThanOrEqual(2);
+  });
+
+  it('still yields four distinct options from a single flagged word', () => {
+    const progress = learningProgress([[1, 0]], [1]);
+    for (const q of buildPracticeQuiz(CURRICULUM, progress, 'mixed', 'learning')) {
+      expect(new Set(q.options).size).toBe(4);
+      expect(q.options).toContain(q.correct);
+    }
   });
 });

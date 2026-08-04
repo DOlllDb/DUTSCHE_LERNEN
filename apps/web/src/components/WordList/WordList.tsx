@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import type { Day } from '@deutsch-lernen/shared';
+import type { Day, WordStatus } from '@deutsch-lernen/shared';
+import { wordKey } from '@deutsch-lernen/shared';
+import { useProgress } from '../../state/ProgressContext.js';
 import { useLang } from '../../state/LangContext.js';
 import styles from './WordList.module.css';
 
@@ -15,6 +17,7 @@ export function WordList({ day, doneAlready, onToggleDone }: Props) {
   const [hideMode, setHideMode] = useState<HideMode>('none');
   const [revealedDe, setRevealedDe] = useState<Set<number>>(new Set());
   const [revealedEn, setRevealedEn] = useState<Set<number>>(new Set());
+  const { progress, setWordStatus } = useProgress();
   const { t } = useLang();
 
   function toggleHide(mode: 'de' | 'en') {
@@ -51,20 +54,51 @@ export function WordList({ day, doneAlready, onToggleDone }: Props) {
         {day.words.map((word, i) => {
           const deMasked = hideMode === 'de' && !revealedDe.has(i);
           const enMasked = hideMode === 'en' && !revealedEn.has(i);
+          const status = progress.wordStatus[wordKey(day.day, i)];
+          // Unset lands on 'known' first, then toggles between the two states.
+          // There is deliberately no way back to unset.
+          const next: WordStatus = status === 'known' ? 'learning' : 'known';
+          const statusLabel =
+            status === 'known' ? t('statusKnown') : status === 'learning' ? t('statusLearning') : t('statusUnset');
+
           return (
-            <div key={i} className={styles.wlItem}>
-              <span
-                className={`${styles.wlDe} ${deMasked ? styles.maskedWord : ''}`}
-                onClick={() => deMasked && setRevealedDe((prev) => new Set(prev).add(i))}
-              >
-                {word.de}
-              </span>
-              <span
-                className={`${styles.wlEn} ${enMasked ? styles.maskedWord : ''}`}
-                onClick={() => enMasked && setRevealedEn((prev) => new Set(prev).add(i))}
-              >
-                {word.en}
-              </span>
+            <div
+              key={i}
+              className={[
+                styles.wlItem,
+                status === 'known' && styles.isKnown,
+                status === 'learning' && styles.isLearning,
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <div className={styles.wlWords}>
+                <span
+                  className={`${styles.wlDe} ${deMasked ? styles.maskedWord : ''}`}
+                  onClick={() => deMasked && setRevealedDe((prev) => new Set(prev).add(i))}
+                >
+                  {word.de}
+                </span>
+                <span
+                  className={`${styles.wlEn} ${enMasked ? styles.maskedWord : ''}`}
+                  onClick={() => enMasked && setRevealedEn((prev) => new Set(prev).add(i))}
+                >
+                  {word.en}
+                </span>
+              </div>
+              <button
+                type="button"
+                className={[
+                  styles.statusDot,
+                  status === 'known' && styles.known,
+                  status === 'learning' && styles.learningFlag,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                title={statusLabel}
+                aria-label={statusLabel}
+                onClick={() => setWordStatus(day.day, i, next)}
+              />
             </div>
           );
         })}

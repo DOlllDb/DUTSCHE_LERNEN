@@ -6,6 +6,10 @@ export interface QuizAnswer {
   correct: boolean;
   picked: string;
   correctAnswer: string;
+  /** Curriculum position, threaded from the question so the review list can
+   * call setWordStatus(day, idx, 'known') on the word that was tested. */
+  day: number;
+  idx: number;
 }
 
 interface QuizSessionState {
@@ -30,7 +34,14 @@ export function useQuizSession(questions: QuizQuestion[]) {
   function submitAnswer(option: string) {
     if (!current || answered) return;
     const correct = option === current.correct;
-    const answer: QuizAnswer = { prompt: current.prompt, correct, picked: option, correctAnswer: current.correct };
+    const answer: QuizAnswer = {
+      prompt: current.prompt,
+      correct,
+      picked: option,
+      correctAnswer: current.correct,
+      day: current.day,
+      idx: current.idx,
+    };
 
     setState((prev) => ({
       ...prev,
