@@ -43,15 +43,23 @@ export const T = {
   sourceLabel: { de: 'Wortauswahl', en: 'Word selection' },
   sourceAll: { de: 'Alle Wörter', en: 'All words' },
   sourceLearning: { de: 'Nur „noch am Lernen“', en: 'Only still learning' },
-  sourceLearningHint: {
-    de: (n: number) =>
+  /** Pool is big enough on its own -- no top-up will happen, so don't mention it. */
+  sourceLearningEnough: {
+    de: (n: number, q: number) =>
+      `${n} Wörter hier sind als „noch am Lernen“ markiert. Der Test wählt ${q} davon zufällig aus.`,
+    en: (n: number, q: number) =>
+      `${n} words here are marked "still learning". The test picks ${q} of them at random.`,
+  },
+  /** Pool is short, so the test really will be padded out. */
+  sourceLearningTopUp: {
+    de: (n: number, q: number) =>
       n === 1
-        ? '1 Wort hier ist als „noch am Lernen“ markiert. Da das nicht für 20 Fragen reicht, wird mit weiteren Wörtern aufgefüllt.'
-        : `${n} Wörter hier sind als „noch am Lernen“ markiert. Reicht das nicht für 20 Fragen, wird mit weiteren Wörtern aufgefüllt.`,
-    en: (n: number) =>
+        ? `1 Wort hier ist als „noch am Lernen“ markiert. Das reicht nicht für ${q} Fragen, also wird mit weiteren Wörtern aufgefüllt.`
+        : `${n} Wörter hier sind als „noch am Lernen“ markiert. Das reicht nicht für ${q} Fragen, also wird mit weiteren Wörtern aufgefüllt.`,
+    en: (n: number, q: number) =>
       n === 1
-        ? '1 word here is marked "still learning". Since that\'s not enough for 20 questions, the rest is topped up with other words.'
-        : `${n} words here are marked "still learning". If that's not enough for 20 questions, the rest is topped up with other words.`,
+        ? `1 word here is marked "still learning". That's not enough for ${q} questions, so the rest is topped up with other words.`
+        : `${n} words here are marked "still learning". That's not enough for ${q} questions, so the rest is topped up with other words.`,
   },
   sourceLearningNone: {
     de: 'Noch keine Wörter als „noch am Lernen“ markiert — der Test wird mit anderen Wörtern aufgefüllt.',

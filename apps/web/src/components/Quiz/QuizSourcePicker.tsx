@@ -1,4 +1,5 @@
 import type { QuizSource } from '@deutsch-lernen/shared';
+import { DEFAULT_QUESTION_COUNT } from '@deutsch-lernen/shared';
 import { useLang } from '../../state/LangContext.js';
 import styles from './Quiz.module.css';
 
@@ -11,7 +12,7 @@ interface Props {
   value: QuizSource;
   onChange: (source: QuizSource) => void;
   /** How many words in this test's own pool are actually flagged 'still
-   * learning'. Drives the hint explaining that a short pool gets topped up. */
+   * learning'. Decides which of the three hints below applies. */
   learningCount: number;
 }
 
@@ -37,7 +38,13 @@ export function QuizSourcePicker({ value, onChange, learningCount }: Props) {
       </div>
       {value === 'learning' && (
         <div className={styles.pickerHint}>
-          {learningCount === 0 ? t('sourceLearningNone') : t('sourceLearningHint', learningCount)}
+          {learningCount === 0
+            ? t('sourceLearningNone')
+            : learningCount >= DEFAULT_QUESTION_COUNT
+              ? // Enough on its own -- don't muddy it with a top-up caveat that
+                // won't apply.
+                t('sourceLearningEnough', learningCount, DEFAULT_QUESTION_COUNT)
+              : t('sourceLearningTopUp', learningCount, DEFAULT_QUESTION_COUNT)}
         </div>
       )}
     </>

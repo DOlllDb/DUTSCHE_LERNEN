@@ -64,7 +64,9 @@ export type QuizDirection = 'de-en' | 'en-de' | 'mixed';
  * count, so this pool is often small and needs topping up. */
 export type QuizSource = 'all' | 'learning';
 
-const DEFAULT_QUESTION_COUNT = 20;
+/** How many questions a test aims for. Exported so the UI can tell whether a
+ * filtered pool is actually short enough to need topping up. */
+export const DEFAULT_QUESTION_COUNT = 20;
 const OPTION_COUNT = 4;
 
 function refsOfDay(d: Day): WordRef[] {
